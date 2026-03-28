@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SABUM.EXE - Retro Kitsch Portfolio</title>
+    <style>
+        body {
+            background-color: #0000AA;
+            color: #FFFFFF;
+            font-family: 'Courier New', Courier, Consolas, Monaco, monospace;
+            margin: 0;
+            padding: 40px 30px;
+            overflow-x: hidden;
+            font-size: 16px;
+            transition: filter 0.3s, background-color 0.3s;
+        }
+
+        ::-webkit-scrollbar {
+            width: 14px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0000AA;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #FF00FF;
+            border: 3px solid #0000AA;
+        }
+
+        /* ?îÎ©¥ ?ΩÏ? ?§Ï∫î?ºÏù∏ ?®Í≥º */
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            z-index: 1000;
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+
+        /* ?†Ìã∏Î¶¨Ìã∞ Î≤ÑÌäº (?∞Ï∏° ?ÅÎã® Í≥†Ï†ï) */
+        .util-bar {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 999999;
+        }
+
+        .retro-btn {
+            background: #000000;
+            color: #55FF55;
+            border: 2px solid #55FF55;
+            padding: 6px 12px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px #55FF55;
+            transition: all 0.1s;
+            text-transform: uppercase;
+        }
+
+        .retro-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: none;
+        }
+
+        .retro-btn:hover {
+            background: #55FF55;
+            color: #000000;
+        }
+
+        /* ??Î∞òÏ†Ñ Î™®Îìú */
+        body.inverted {
+            filter: invert(1);
+            background-color: #0000AA;
+        }
+
+        /* ?§Íµ≠???∏Ïñ¥ ?†Í? Î°úÏßÅ CSS */
+        html[lang="en"] .kr {
+            display: none !important;
+        }
+
+        html[lang="ko"] .en {
+            display: none !important;
+        }
+
+        /* Î∂Ä???îÎ©¥ ?§Ì???*/
+        #boot-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .boot-line {
+            line-height: 1.5;
+            margin-bottom: 5px;
+            color: #55FF55;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            width: 320px;
+            height: 24px;
+            border: 4px solid #FFFFFF;
+            margin-top: 20px;
+            position: relative;
+            background: #000000;
+            box-shadow: 4px 4px 0px #FF00FF;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #FFFF00;
+            width: 0%;
+            animation: loadProgress 1.5s steps(8) forwards;
+        }
+
+        @keyframes loadProgress {
+            0% {
+                width: 0%;
+            }
+
+            100% {
+                width: 100%;
+            }
+        }
+
+        .terminal-container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* ÎØ∏ÏÑ∏??Í∏ÄÎ¶¨Ïπò */
+        .is-scrolling {
+            animation: subtleGlitch 0.2s steps(2) infinite;
+        }
+
+        @keyframes subtleGlitch {
+            0% {
+                transform: translate(0);
+                text-shadow: none;
+            }
+
+            33% {
+                transform: translate(-0.5px, 0.5px);
+                text-shadow: 1px 0 rgba(255, 0, 255, 0.7), -1px 0 rgba(0, 255, 255, 0.7);
+            }
+
+            66% {
+                transform: translate(0.5px, -0.5px);
+                text-shadow: -1px 0 rgba(255, 0, 255, 0.7), 1px 0 rgba(85, 255, 85, 0.7);
+            }
+
+            100% {
+                transform: translate(0);
+                text-shadow: none;
+            }
+        }
+
+        /* ?Ä?¥Ì? ?†ÎãàÎ©îÏù¥??& Ïª®ÌÖå?¥ÎÑà */
+        .ascii-art-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 70px;
+            margin-top: 30px;
+        }
+
+        .ascii-art {
+            color: #FFFF00;
+            font-weight: 900;
+            white-space: pre;
+            line-height: 1.1;
+            font-size: clamp(16px, 3.8vw, 35px);
+            text-shadow: 4px 4px 0px #FF00FF, 8px 8px 0px rgba(0, 0, 0, 0.5);
+            animation: float 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes float {
+            from {
+                transform: translateY(0px);
+            }
+
+            to {
+                transform: translateY(-8px);
+            }
+        }
+
+        /* ?ÑÎ°¨?ÑÌä∏ Î™ÖÎ†π Ï§?*/
+        .line {
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .prompt {
+            margin-top: 50px;
+            margin-bottom: 20px;
+        }
+
+        .prompt::before {
+            content: "C:\> ";
+            color: #FFFF00;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .system-msg {
+            color: #55FF55;
+            font-weight: bold;
+        }
+
+        .tool-msg {
+            color: #FF00FF;
+        }
+
+        .keyword {
+            color: #FFFF00;
+            font-weight: bold;
+        }
+
+        /* ?§Ïπò ?ΩÏ? Ïπ¥Îìú??Ïª®ÌÖå?¥ÎÑà */
+        .pixel-card {
+            background-color: #000055;
+            border: 4px solid #FFFFFF;
+            padding: 30px 20px 20px 20px;
+            margin: 60px 0 40px 0;
+            box-shadow: 8px 8px 0px #FF00FF;
+            position: relative;
+        }
+
+        .pixel-card.magenta {
+            border-color: #FF00FF;
+            box-shadow: 6px 6px 0px #00FFFF;
+        }
+
+        .pixel-card.cyan {
+            border-color: #00FFFF;
+            box-shadow: 6px 6px 0px #FFFF00;
+        }
+
+        .pixel-card.green {
+            border-color: #55FF55;
+            box-shadow: 6px 6px 0px #FF00FF;
+        }
+
+        .pixel-card.yellow {
+            border-color: #FFFF00;
+            box-shadow: 6px 6px 0px #FF5555;
+        }
+
+        .card-header {
+            background: #FFFFFF;
+            color: #0000AA;
+            display: inline-block;
+            padding: 4px 12px;
+            font-size: 18px;
+            font-weight: 900;
+            position: absolute;
+            top: -16px;
+            left: 10px;
+            border: 4px solid #0000AA;
+        }
+
+        .pixel-card.magenta .card-header {
+            background: #FF00FF;
+            color: #FFF;
+            border-color: #00FFFF;
+        }
+
+        .pixel-card.cyan .card-header {
+            background: #00FFFF;
+            color: #000;
+            border-color: #FFFF00;
+        }
+
+        .pixel-card.green .card-header {
+            background: #55FF55;
+            color: #000;
+            border-color: #FF00FF;
+        }
+
+        .pixel-card.yellow .card-header {
+            background: #FFFF00;
+            color: #000;
+            border-color: #FF5555;
+        }
+
+        /* Î¶¨Ïä§???§Ì???*/
+        .retro-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .retro-list li {
+            margin-bottom: 15px;
+            padding-left: 25px;
+            position: relative;
+            line-height: 1.4;
+        }
+
+        .retro-list li::before {
+            content: "??;
+            position: absolute;
+            left: 0;
+            color: #FFFF00;
+            animation: pulseColor 1s infinite alternate;
+        }
+
+        @keyframes pulseColor {
+            from {
+                color: #FFFF00;
+            }
+
+            to {
+                color: #FF00FF;
+            }
+        }
+
+        .retro-list span.year {
+            display: inline-block;
+            color: #55FF55;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        /* Í∞§Îü¨Î¶??πÏÖò (ÎØ∏ÎãàÎ©Ä Ï°∞Ï†ï) */
+        .portfolio-gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .portfolio-gallery {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .canvas-container {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px;
+            transition: transform 0.2s;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .canvas-container:hover {
+            transform: scale(1.02);
+            z-index: 10;
+            border: 1px solid #FFFF00;
+        }
+
+        .pixel-canvas {
+            width: 100%;
+            height: auto;
+            image-rendering: pixelated;
+            display: block;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 12px;
+            height: 1.2em;
+            background-color: #55FF55;
+            animation: blink 1s step-end infinite;
+            vertical-align: text-bottom;
+            margin-left: 5px;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* ?ÑÎ°ú???ÑÎ∞î?Ä & Î¥?*/
+        .pixel-art-container {
+            margin: 30px 0;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            background: url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><rect width="2" height="2" fill="rgba(255,255,255,0.1)"/></svg>');
+            padding: 20px;
+            border: 2px dashed #00FFFF;
+        }
+
+        .pixel-img {
+            width: 140px;
+            height: 140px;
+            image-rendering: pixelated;
+            border: 4px solid #FFFFFF;
+            background: #000000;
+            box-shadow: -4px 4px 0px #FF00FF, 4px -4px 0px #00FFFF;
+        }
+
+        .cute-bot {
+            color: #FFFF00;
+            font-size: 20px;
+            font-weight: 900;
+            line-height: 1.5;
+            background: #000000;
+            padding: 10px 15px;
+            border: 2px solid #55FF55;
+            position: relative;
+        }
+
+        .cute-bot::after {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: transparent #55FF55 transparent transparent;
+        }
+
+        /* ?ΩÏ? Î™¨Ïä§??Ïª§ÏÑú ?ôÎ∞ò??*/
+        .monster-cursor {
+            position: fixed;
+            pointer-events: none;
+            z-index: 99999;
+            font-size: 32px;
+            transform: translate(15px, 15px);
+            display: flex;
+            align-items: center;
+            filter: drop-shadow(3px 3px 0px #FF00FF);
+        }
+
+        .monster-emoji {
+            display: inline-block;
+            transition: transform 0.1s;
+        }
+
+        .nom-text {
+            display: none;
+            font-size: 16px;
+            color: #FFFF00;
+            font-family: inherit;
+            font-weight: 900;
+            margin-left: 8px;
+            background: #000000;
+            padding: 2px 8px;
+            border: 2px solid #55FF55;
+            animation: textBounce 0.2s infinite alternate;
+        }
+
+        .monster-cursor.eating .nom-text {
+            display: block;
+        }
+
+        .monster-cursor.eating .monster-emoji {
+            animation: chomp 0.15s infinite alternate;
+            filter: hue-rotate(180deg) brightness(1.2);
+        }
+
+        @keyframes chomp {
+            0% {
+                transform: scale(1) rotate(-15deg);
+            }
+
+            100% {
+                transform: scale(1.4) rotate(15deg);
+            }
+        }
+
+        @keyframes textBounce {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(-5px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ?†Ìã∏Î¶¨Ìã∞ Î≤ÑÌäº Íµ¨Ïó≠ -->
+    <div class="util-bar">
+        <button id="btn-lang" class="retro-btn">EN</button>
+        <button id="btn-invert" class="retro-btn">INVERT</button>
+    </div>
+
+    <!-- Î∂Ä???îÎ©¥ -->
+    <div id="boot-screen">
+        <div>
+            <div class="boot-line">SABUM-OS v9.5 (KITSCH EDITION)</div>
+            <div class="boot-line">Processor: 8-Bit Creativity Engine</div>
+            <div class="boot-line">Memory: 64000K OK</div>
+            <br>
+            <div class="boot-line" style="color:#FFFF00;">Loading pixel assets... ?ëæ</div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <div id="boot-status" class="boot-line" style="margin-top: 15px;">Mouting Design Portfolio...</div>
+        </div>
+    </div>
+
+    <!-- Î©îÏù∏ ?îÎ©¥ -->
+    <div class="terminal-container" id="main-screen" style="display: none;">
+
+        <!-- ?Ä??ASCII Î°úÍ≥† -->
+        <div class="ascii-art-container">
+            <div class="ascii-art">
+                _____ ___ ___ __ __ __ __
+                / ___/ / | / | / / / / / / / /
+                \__ \ / /| | / /| |/ / / / / /_/ /
+                ___/ // ___ |/ ___ / /_/ / / __ /
+                /____//_/ |_/_/ |_\____/ /_/ /_/ .EXE
+            </div>
+        </div>
+
+        <div class="line prompt">execute sabum_profile.exe</div>
+
+        <!-- ?ÑÎ°ú???ΩÏ? Ïª®ÌÖå?¥ÎÑà -->
+        <div class="pixel-art-container">
+            <img src="./img/sabum_pixel_avatar.png" class="pixel-img" alt="Pixel Avatar">
+            <div class="cute-bot">
+                ?§ñ H E L L O !
+                I'm Sabum Byun.
+                <span class="kr">?îÏûê???îÎ†â???ÖÎãà??</span><span class="en">Creative Director</span>
+            </div>
+        </div>
+
+        <!-- Î≤†Ïù¥Ïß??∏Ìè¨ -->
+        <div class="pixel-card magenta">
+            <div class="card-header">INFO</div>
+            <ul class="retro-list">
+                <li><span class="keyword">Name:</span> <span class="kr">Î≥Ä?¨Î≤î / Sabum Byun</span><span class="en">Sabum
+                        Byun</span></li>
+                <li><span class="keyword">Phone:</span> 010-3448-8594</li>
+                <li><span class="keyword">E-mail:</span> sabum@plus-ex.com</li>
+                <li><span class="keyword">Web:</span> www.plus-ex.com</li>
+            </ul>
+        </div>
+
+        <div class="line prompt">SELECT * FROM Career</div>
+        <!-- Í≤ΩÎ†• -->
+        <div class="pixel-card cyan">
+            <div class="card-header">?ìÅ CAREER</div>
+            <ul class="retro-list">
+                <li><span class="year">2023 ~ </span> <span class="kr">?åÎü¨?§Ïóë??Í≥†Î¨∏ / ?§ÌÉ†?îÏä§ CDO</span><span class="en">Plus X
+                        Advisor / Standus CDO</span></li>
+                <li><span class="year">2020 - 2023</span> <span class="kr">?ÑÎçîÏΩîÏñ¥ Í≥µÎèô?Ä??/span><span class="en">WitheCore
+                        Co-CEO</span></li>
+                <li><span class="year">2010 - 2020</span> <span class="kr">Plus X Í≥µÎèô?Ä??/ Creative Director</span><span
+                        class="en">Plus X Co-CEO / Creative Director</span></li>
+                <li><span class="year">2006 - 2010</span> <span class="kr">NHN ÎØ∏Îîî?¥Îîî?êÏù∏ ?Ä??/span><span class="en">NHN
+                        Media Design Team Leader</span></li>
+                <li><span class="year">2005 - 2006</span> <span class="kr">?îÏûê?∏ÌîºÎ≤??îÏûê?¥ÎÑà</span><span class="en">Design
+                        Fever Designer</span></li>
+                <li><span class="year">2003 - 2005</span> <span class="kr">?îÏûê?∏Îâ¥??Ï∞ΩÏóÖ</span><span class="en">Design New-E
+                        Founder</span></li>
+                <li><span class="year">1999 - 2003</span> <span class="kr">Ï≤?∞ïÎ¨∏Ìôî?∞ÏóÖ?Ä??Î©Ä?∞Î??îÏñ¥?îÏûê?∏ÌïôÍ≥?/span><span
+                        class="en">Chungkang College Multimedia Design</span></li>
+            </ul>
+        </div>
+
+        <div class="line prompt">SELECT * FROM Projects</div>
+        <!-- ?îÏûê???ÑÎ°ú?ùÌä∏ -->
+        <div class="pixel-card green">
+            <div class="card-header">?? PROJECTS</div>
+            <ul class="retro-list" id="projects-list">
+                <li><span class="year">2024</span> <span class="kr">MBC?§ÌÅêÎ©òÌÑ∞Î¶?'ÍµêÏã§?¥Îç∞?? ?∏Ìä∏Î°??ÑÌä∏??br>Î∏îÎü¨Î∏îÎü¨ AI Î™®Îç∏?êÏù¥?ÑÌä∏
+                        Í∞úÎ∞ú</span><span class="en">MBC Docu 'Class Idea' Intro Artwork<br>BlurBlur AI Model Agent
+                        Dev</span></li>
+                <li><span class="year">2023</span> <span class="kr">?ôÌï¥?åÏ£º AI?¨Ïä§???îÏûê??br>LG?ùÌôúÍ±¥Í∞ï ?ÑÏö∞???ºÎ≤® ?îÏûê??(AI)</span><span
+                        class="en">Donghae Soju AI Poster Design<br>LG H&H Aura Label Design (AI)</span></li>
+                <li><span class="year">2020</span> <span class="kr">?îÌè∞?? ?§ÎÑ§?? ?¨Ïäê??Î∏åÎûú???ÑÏ≤¥ ?¥ÏòÅ</span><span
+                        class="en">DPONDE, KINEFF, POSHULA Brand Management</span></li>
+                <li><span class="year">2019</span> <span class="kr">?åÎü¨?§Ïóë??Î¶¨Îâ¥???πÏÇ¨?¥Ìä∏</span><span class="en">Plus X Renewal
+                        Website</span></li>
+                <li><span class="year">2018</span> <span class="kr">?¥Îßà??APP UI/UX, ?ºÏÑ±?ÑÏûê ?†Í∑ú?úÌíàÍ∞úÎ∞ú UI/UX</span><span
+                        class="en">E-Mart APP UI/UX, Samsung New Product UI/UX</span></li>
+                <li><span class="year">2015</span> <span class="kr">?†ÏÑ∏Í≥?SSG PAY Î∏åÎûú?úÏï± UI/UX, 29CM ??Í≥†ÎèÑ??/span><span
+                        class="en">Shinsegae SSG PAY Brand App UI/UX, 29CM App UX Enhancement</span></li>
+            </ul>
+        </div>
+
+        <div class="line prompt">SELECT * FROM Glory</div>
+        <!-- ?òÏÉÅ ?§Ï†Å & Í∞ïÏùò -->
+        <div class="pixel-card yellow">
+            <div class="card-header">?èÜ AWARDS & LECTURES</div>
+            <ul class="retro-list" style="margin-bottom: 25px;">
+                <li style="color:#FFFF00; font-weight:bold; margin-bottom:5px;">[ Awards ] <span class="kr">Ï¥?40?¨Í∞ú ?¥ÏÉÅ
+                        Íµ?†ú/Íµ?Ç¥ ?òÏÉÅ</span><span class="en">Over 40 International/Domestic Awards</span></li>
+                <li><span class="year">2021</span> IDEA - Krafton Brand eXperience Design</li>
+                <li><span class="year">2020</span> Reddot - PlusX Official Website</li>
+                <li><span class="year">2020</span> IF award - PlusX Internal Branding</li>
+                <li><span class="year">2015</span> <span class="kr">& award ?Ä??- 29CM App</span><span class="en">& award
+                        Grand Prize - 29CM App</span></li>
+            </ul>
+            <ul class="retro-list">
+                <li style="color:#FFFF00; font-weight:bold; margin-bottom:5px;">[ Lectures ] <span class="kr">Ï¥?100???¥ÏÉÅ
+                        ?πÍ∞ï ÏßÑÌñâ</span><span class="en">Over 100 Special Lectures Conducted</span></li>
+                <li><span class="year">2024</span> <span class="kr">Í∏∞ÏóÖ, ?Ä??70?¨Î≤à??AIÍ∞ïÏó∞</span><span class="en">Over 70 AI
+                        Lectures for Companies & Universities</span></li>
+                <li><span class="year">2023</span> <span class="kr">?®Ïä§?∏Ï∫†?ºÏä§ ?®Îùº??AIÍ∞ïÏùò ?∞Ïπ≠</span><span class="en">FastCampus
+                        Online AI Course Launch</span></li>
+                <li><span class="year">ETC </span> <span class="kr">?çÏùµ?Ä, Ïπ¥Ïù¥?§Ìä∏, ?åÎ¶¨Î∞îÎ∞î, ?ºÏÑ±?ÑÏûê ??/span><span
+                        class="en">Hongik Univ, KAIST, Alibaba, Samsung, etc.</span></li>
+            </ul>
+        </div>
+
+        <div class="line prompt">DIR \IMG\*.JPG /PIXELATE</div>
+        <!-- ?¨Ìä∏?¥Î¶¨???¥Î?ÏßÄ Í∞§Îü¨Î¶?(ÎØ∏ÎãàÎ©Ä) -->
+        <div class="pixel-card magenta" style="border-color: #FF00FF; box-shadow: 6px 6px 0px #00FFFF;">
+            <div class="card-header" style="background:#FF00FF; color:#FFF; border-color:#00FFFF;">?ñºÔ∏?GALLERY</div>
+            <div class="portfolio-gallery" id="gallery-container"></div>
+        </div>
+
+        <div class="line" style="color:#00FFFF; margin-top:30px; font-weight:bold;">
+            <span class="kr">[READY] ?úÏä§?úÏù¥ Ï§ÄÎπÑÎêò?àÏäµ?àÎã§. ?§Ïùå Î™ÖÎ†π???ÖÎ†•?òÏÑ∏??</span>
+            <span class="en">[READY] Portfolio successfully loaded. Waiting for next command...</span>
+        </div>
+        <div class="line prompt"><span class="cursor"></span></div>
+    </div>
+
+    <script>
+        // ------------------ Î∂Ä???§ÌÅ¨Î¶?Î°úÏßÅ ------------------
+        const bootStatus = document.getElementById('boot-status');
+        const statuses = ["Extracting pixel juice... ?ßÉ", "Injecting fun styles... ?é®", "Ready! ?ëæ"];
+        let statusIndex = 0;
+
+        const bootInterval = setInterval(() => {
+            if (statusIndex < statuses.length) {
+                bootStatus.textContent = statuses[statusIndex];
+                statusIndex++;
+            }
+        }, 400);
+
+        const bootComplete = () => {
+            clearInterval(bootInterval);
+            document.getElementById('boot-screen').style.display = 'none';
+            document.getElementById('main-screen').style.display = 'block';
+            window.scrollTo(0, 0);
+        };
+
+        setTimeout(bootComplete, 1600);
+        document.addEventListener('keydown', bootComplete, { once: true });
+
+        // ------------------ ?†Ìã∏Î¶¨Ìã∞ Î≤ÑÌäº ?¥Î≤§??(EN/KR & ??Î∞òÏ†Ñ) ------------------
+        // ?∏Ïñ¥ Î≥Ä??Î≤ÑÌäº
+        const btnLang = document.getElementById('btn-lang');
+        btnLang.addEventListener('click', () => {
+            const currentLang = document.documentElement.lang;
+            if (currentLang === 'ko') {
+                document.documentElement.lang = 'en';
+                btnLang.innerText = 'KR';
+            } else {
+                document.documentElement.lang = 'ko';
+                btnLang.innerText = 'EN';
+            }
+        });
+
+        // ??Î∞òÏ†Ñ Î≤ÑÌäº
+        const btnInvert = document.getElementById('btn-invert');
+        btnInvert.addEventListener('click', () => {
+            document.body.classList.toggle('inverted');
+        });
+
+        // ------------------ Í∞§Îü¨Î¶??ΩÏ????åÎçîÎß?Î°úÏßÅ (ÎØ∏ÎãàÎ©Ä Î∞ïÏä§ ?îÏûê?? ------------------
+        const imagesToLoad = [
+            "./img/img_011.jpg",
+            "./img/img_012.jpg",
+            "./img/img_013.jpg",
+            "./img/img_005.jpg",
+            "./img/img_002.jpg",
+            "./img/img_004.jpg"
+        ];
+
+        const galleryContainer = document.getElementById('gallery-container');
+
+        imagesToLoad.forEach((src, idx) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'canvas-container';
+
+            const canvas = document.createElement('canvas');
+            canvas.className = 'pixel-canvas';
+
+            wrapper.appendChild(canvas);
+            galleryContainer.appendChild(wrapper);
+
+            const pixelSize = 8;
+
+            const img = new Image();
+            img.src = src;
+            img.onload = () => {
+                const ctx = canvas.getContext('2d');
+                const width = 600;
+                const ratio = img.height / img.width;
+                const height = width * ratio;
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const fw = Math.max(1, Math.floor(width / pixelSize));
+                const fh = Math.max(1, Math.floor(height / pixelSize));
+
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = fw;
+                tempCanvas.height = fh;
+                const tCtx = tempCanvas.getContext('2d');
+                tCtx.drawImage(img, 0, 0, fw, fh);
+
+                ctx.imageSmoothingEnabled = false;
+                ctx.filter = "contrast(1.3) saturate(1.5)";
+                ctx.drawImage(tempCanvas, 0, 0, fw, fh, 0, 0, width, height);
+            };
+        });
+
+        // ------------------ ?ΩÏ? Î™¨Ïä§??Ïª§ÏÑú ?ôÎ∞ò??Î°úÏßÅ ------------------
+        const monsterCursor = document.createElement('div');
+        monsterCursor.className = 'monster-cursor';
+        monsterCursor.innerHTML = '<span class="monster-emoji">?ëæ</span><span class="nom-text">?†ÎÉ†!</span>';
+        document.body.appendChild(monsterCursor);
+
+        document.addEventListener('mousemove', (e) => {
+            monsterCursor.style.left = e.clientX + 'px';
+            monsterCursor.style.top = e.clientY + 'px';
+        });
+
+        document.addEventListener('mouseover', (e) => {
+            const target = e.target;
+            if (target === document.body || target === document.documentElement ||
+                target.id === 'main-screen' || target.id === 'boot-screen' ||
+                target.classList.contains('terminal-container') || target.classList.contains('progress-bar')) {
+                monsterCursor.classList.remove('eating');
+            } else {
+                monsterCursor.classList.add('eating');
+            }
+        });
+
+        document.addEventListener('mouseout', (e) => {
+            if (!e.relatedTarget) {
+                monsterCursor.classList.remove('eating');
+            }
+        });
+
+        // ------------------ ÎØ∏ÏÑ∏???§ÌÅ¨Î°?Í∏ÄÎ¶¨Ïπò ?®Í≥º ------------------
+        let scrollTimeout;
+        window.addEventListener('scroll', () => {
+            const mainScreen = document.getElementById('main-screen');
+            if (mainScreen.style.display !== 'none') {
+                mainScreen.classList.add('is-scrolling');
+
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    mainScreen.classList.remove('is-scrolling');
+                }, 100);
+            }
+        });
+    </script>
+</body>
+
+</html>
